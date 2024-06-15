@@ -1,0 +1,35 @@
+#!/bin/bash
+#SBATCH --mem=200g
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=16     # <- match to OMP_NUM_THREADS
+#SBATCH --partition=gpuA40x4
+#SBATCH --gpus=2
+#SBATCH --time=48:00:00
+#SBATCH --account=bbmr-delta-gpu
+#SBATCH --job-name=train_with_cls
+### GPU options ###
+#SBATCH --gpus-per-node=2
+#SBATCH --gpus-per-task=2
+#SBATCH --gpu-bind=closest     # <- or closest
+#SBATCH --output=/scratch/bbmr/ymp5078/segmentations/FCBFormer/logs/LSC_04_00.log
+set -x
+cd /scratch/bbmr/ymp5078/segmentations/FCBFormer
+pwd
+module load anaconda3_gpu
+source activate lsc
+nvidia-smi
+
+SAVEPATH=/scratch/bbmr/ymp5078/segmentations/FCBFormer/logs/LSC_04_00
+python -W ignore train.py --dataset=CVC_gen --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/ --gen-input-path /scratch/bbmr/ymp5078/segmentations/ControlNet/CVC_gen_16 --consist_loss_weight 0.4 --kd_loss_weight 0.0 --gen_image --multi-gpu true --save-path $SAVEPATH
+python -W ignore train.py --dataset=Kvasir_gen --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/ --gen-input-path /scratch/bbmr/ymp5078/segmentations/ControlNet/Kvasir_gen_16 --consist_loss_weight 0.4 --kd_loss_weight 0.0 --gen_image --multi-gpu true --save-path $SAVEPATH
+
+python predict.py --train-dataset=CVC_gen --test-dataset=CVC --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/ --save-path $SAVEPATH
+python predict.py --train-dataset=Kvasir_gen --test-dataset=CVC --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/ --save-path $SAVEPATH
+python predict.py --train-dataset=CVC_gen --test-dataset=Kvasir --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/ --save-path $SAVEPATH
+python predict.py --train-dataset=Kvasir_gen --test-dataset=Kvasir --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/ --save-path $SAVEPATH
+
+python eval.py --train-dataset=CVC_gen --test-dataset=CVC --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/ --save-path $SAVEPATH
+python eval.py --train-dataset=Kvasir_gen --test-dataset=CVC --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/ --save-path $SAVEPATH
+python eval.py --train-dataset=CVC_gen --test-dataset=Kvasir --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/ --save-path $SAVEPATH
+python eval.py --train-dataset=Kvasir_gen --test-dataset=Kvasir --data-root=/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/ --save-path $SAVEPATH

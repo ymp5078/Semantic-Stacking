@@ -1,0 +1,158 @@
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-02-08T12-55-03_seed23_efficientUnet_bSSFP_to_LEG
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99681, std: 0.00065
+Organ Myocardium with dice: mean: 0.88100, std: 0.02291
+Organ Lventricle with dice: mean: 0.95555, std: 0.01062
+Organ Rventricle with dice: mean: 0.93146, std: 0.01309
+Overall std dice by sample 0.03514
+Overall mean dice by sample 0.92267
+per domain resutls: [0.9226714173952738]
+Overall mean dice by domain 0.92267
+Organ bg with dice: mean: 0.99432, std: 0.00186
+Organ Myocardium with dice: mean: 0.80280, std: 0.04331
+Organ Lventricle with dice: mean: 0.91558, std: 0.03742
+Organ Rventricle with dice: mean: 0.87429, std: 0.04847
+Overall std dice by sample 0.06361
+Overall mean dice by sample 0.86422
+per domain resutls: [0.8642189010977746]
+Overall mean dice by domain 0.86422
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-03-04T11-06-43_seed23_efficientUnet_bSSFP_to_LEG_LSC --epoch 1099
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99675, std: 0.00052
+Organ Myocardium with dice: mean: 0.87582, std: 0.02049
+Organ Lventricle with dice: mean: 0.95857, std: 0.00854
+Organ Rventricle with dice: mean: 0.93047, std: 0.01059
+Overall std dice by sample 0.03718
+Overall mean dice by sample 0.92162
+per domain resutls: [0.9216197013854981]
+Overall mean dice by domain 0.92162
+Organ bg with dice: mean: 0.99444, std: 0.00190
+Organ Myocardium with dice: mean: 0.79838, std: 0.04571
+Organ Lventricle with dice: mean: 0.91476, std: 0.04037
+Organ Rventricle with dice: mean: 0.86867, std: 0.04996
+Overall std dice by sample 0.06604
+Overall mean dice by sample 0.86060
+per domain resutls: [0.8606028040250142]
+Overall mean dice by domain 0.86060
+
+
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-02-08T12-58-27_seed23_efficientUnet_LEG_to_bSSFP
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99474, std: 0.00158
+Organ Myocardium with dice: mean: 0.81497, std: 0.05915
+Organ Lventricle with dice: mean: 0.89308, std: 0.07021
+Organ Rventricle with dice: mean: 0.91249, std: 0.02371
+Overall std dice by sample 0.06909
+Overall mean dice by sample 0.87351
+per domain resutls: [0.8735139807065327]
+Overall mean dice by domain 0.87351
+Organ bg with dice: mean: 0.99360, std: 0.00184
+Organ Myocardium with dice: mean: 0.80639, std: 0.03351
+Organ Lventricle with dice: mean: 0.91430, std: 0.02574
+Organ Rventricle with dice: mean: 0.89434, std: 0.03639
+Overall std dice by sample 0.05687
+Overall mean dice by sample 0.87168
+per domain resutls: [0.8716763797260466]
+Overall mean dice by domain 0.87168
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-03-04T13-29-38_seed23_efficientUnet_LEG_to_bSSFP_LSC --epoch 1099
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99517, std: 0.00111
+Organ Myocardium with dice: mean: 0.81825, std: 0.05451
+Organ Lventricle with dice: mean: 0.89553, std: 0.06659
+Organ Rventricle with dice: mean: 0.91473, std: 0.02036
+Overall std dice by sample 0.06592
+Overall mean dice by sample 0.87617
+per domain resutls: [0.8761703968048096]
+Overall mean dice by domain 0.87617
+Organ bg with dice: mean: 0.99381, std: 0.00191
+Organ Myocardium with dice: mean: 0.80190, std: 0.04113
+Organ Lventricle with dice: mean: 0.92167, std: 0.02428
+Organ Rventricle with dice: mean: 0.90099, std: 0.03098
+Overall std dice by sample 0.06175
+Overall mean dice by sample 0.87485
+per domain resutls: [0.8748504820324126]
+Overall mean dice by domain 0.87485
+
+
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-02-08T12-56-15_seed23_efficientUnet_CHAOS_to_SABSCT
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99022, std: 0.00154
+Organ liver with dice: mean: 0.91749, std: 0.01130
+Organ rk with dice: mean: 0.92286, std: 0.01127
+Organ lk with dice: mean: 0.91135, std: 0.03818
+Organ spleen with dice: mean: 0.87222, std: 0.06808
+Overall std dice by sample 0.04453
+Overall mean dice by sample 0.90598
+per domain resutls: [0.9059780240058899]
+Overall mean dice by domain 0.90598
+Organ bg with dice: mean: 0.98666, std: 0.00577
+Organ liver with dice: mean: 0.88868, std: 0.05278
+Organ rk with dice: mean: 0.80226, std: 0.18061
+Organ lk with dice: mean: 0.81587, std: 0.13645
+Organ spleen with dice: mean: 0.76117, std: 0.14229
+Overall std dice by sample 0.14383
+Overall mean dice by sample 0.81700
+per domain resutls: [0.8169969721076389]
+Overall mean dice by domain 0.81700
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-03-04T13-31-45_seed23_efficientUnet_CHAOS_to_SABSCT_LSC --epoch 1099
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99040, std: 0.00191
+Organ liver with dice: mean: 0.91689, std: 0.00045
+Organ rk with dice: mean: 0.91837, std: 0.00674
+Organ lk with dice: mean: 0.90721, std: 0.04288
+Organ spleen with dice: mean: 0.90875, std: 0.04001
+Overall std dice by sample 0.02992
+Overall mean dice by sample 0.91280
+per domain resutls: [0.9128019288182259]
+Overall mean dice by domain 0.91280
+Organ bg with dice: mean: 0.98646, std: 0.00635
+Organ liver with dice: mean: 0.88301, std: 0.05512
+Organ rk with dice: mean: 0.81792, std: 0.16302
+Organ lk with dice: mean: 0.80310, std: 0.12035
+Organ spleen with dice: mean: 0.82206, std: 0.11280
+Overall std dice by sample 0.12304
+Overall mean dice by sample 0.83152
+per domain resutls: [0.831521388143301]
+Overall mean dice by domain 0.83152
+
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-02-08T13-41-15_seed23_efficientUnet_SABSCT_to_CHAOS
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99449, std: 0.00094
+Organ liver with dice: mean: 0.96486, std: 0.00451
+Organ rk with dice: mean: 0.66979, std: 0.39517
+Organ lk with dice: mean: 0.79240, std: 0.21391
+Organ spleen with dice: mean: 0.87918, std: 0.10748
+Overall std dice by sample 0.25551
+Overall mean dice by sample 0.82656
+per domain resutls: [0.8265573345124722]
+Overall mean dice by domain 0.82656
+Organ bg with dice: mean: 0.98835, std: 0.00362
+Organ liver with dice: mean: 0.89966, std: 0.03476
+Organ rk with dice: mean: 0.89394, std: 0.03210
+Organ lk with dice: mean: 0.87398, std: 0.03834
+Organ spleen with dice: mean: 0.87448, std: 0.07955
+Overall std dice by sample 0.05139
+Overall mean dice by sample 0.88551
+per domain resutls: [0.8855118624866009]
+Overall mean dice by domain 0.88551
+
+python test.py -r /scratch/bbmr/ymp5078/segmentations/SLAug/logs/2024-03-04T13-31-45_seed23_efficientUnet_SABSCT_to_CHAOS_LSC --epoch 1099
+Epoch 0 test result on mode base segmentation are shown as follows:
+Organ bg with dice: mean: 0.99483, std: 0.00066
+Organ liver with dice: mean: 0.96601, std: 0.00348
+Organ rk with dice: mean: 0.67658, std: 0.37913
+Organ lk with dice: mean: 0.83582, std: 0.15609
+Organ spleen with dice: mean: 0.89011, std: 0.09706
+Overall std dice by sample 0.23592
+Overall mean dice by sample 0.84213
+per domain resutls: [0.8421314880251884]
+Overall mean dice by domain 0.84213
+Organ bg with dice: mean: 0.98852, std: 0.00373
+Organ liver with dice: mean: 0.90713, std: 0.03228
+Organ rk with dice: mean: 0.89215, std: 0.03308
+Organ lk with dice: mean: 0.86553, std: 0.04751
+Organ spleen with dice: mean: 0.84507, std: 0.15468
+Overall std dice by sample 0.08747
+Overall mean dice by sample 0.87747
+per domain resutls: [0.8774660039693117]
+Overall mean dice by domain 0.87747
