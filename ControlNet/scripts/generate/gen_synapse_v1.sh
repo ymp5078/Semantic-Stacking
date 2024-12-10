@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./Synapse_gen_16 --dataset Synapse --model_path '[checkpoint_path]'

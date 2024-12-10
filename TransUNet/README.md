@@ -1,13 +1,10 @@
-# TransUNet
-This repo holds code for [TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation](https://arxiv.org/pdf/2102.04306.pdf)
+# Setup for TransUNet
 
-## 📰 News
+Please refer to the original GitHub repo [TransUNet](https://github.com/Beckschen/TransUNet) for details. The basic setup is below.
 
-- [10/15/2023] 🔥 3D version of TransUNet is out! Our 3D TransUNet surpasses nn-UNet with 88.11% Dice score on the BTCV dataset and outperforms the top-1 solution in the BraTs 2021 challenge. Please take a look at the [code](https://github.com/Beckschen/3D-TransUNet/tree/main) and [paper](https://arxiv.org/abs/2310.07781).
+## Prepare model and data
 
-## Usage
-
-### 1. Download Google pre-trained ViT models
+Download Google pre-trained ViT models
 * [Get models in this link](https://console.cloud.google.com/storage/vit_models/): R50-ViT-B_16, ViT-B_16, ViT-L_16...
 ```bash
 wget https://storage.googleapis.com/vit_models/imagenet21k/{MODEL_NAME}.npz &&
@@ -15,40 +12,31 @@ mkdir ../model/vit_checkpoint/imagenet21k &&
 mv {MODEL_NAME}.npz ../model/vit_checkpoint/imagenet21k/{MODEL_NAME}.npz
 ```
 
-### 2. Prepare data
+Prepare data
 
 Please go to ["./datasets/README.md"](datasets/README.md) for details, or use the [preprocessed data](https://drive.google.com/drive/folders/1ACJEoTp-uqfFJ73qS3eUObQh52nGuzCd?usp=sharing) and [data2](https://drive.google.com/drive/folders/1KQcrci7aKsYZi1hQoZ3T3QUtcy7b--n4?usp=drive_link) for research purposes.
 
-### 3. Environment
-
 Please prepare an environment with python=3.7, and then use the command "pip install -r requirements.txt" for the dependencies.
 
-### 4. Train/Test
+Change the [data_dir] and [gen_output_path] in [train.py](./train.py) and [train_acdc.py](./train_acdc.py). 
 
-- Run the train script on synapse dataset. The batch size can be reduced to 12 or 6 to save memory (please also decrease the base_lr linearly), and both can reach similar performance.
+## Usage
 
-```bash
-CUDA_VISIBLE_DEVICES=0 python train.py --dataset Synapse --vit_name R50-ViT-B_16
-```
+You can find the training and testing scripts under [scripts](./scripts/)
 
-- Run the test script on synapse dataset. It supports testing for both 2D images and 3D volumes.
+### Training 
 
 ```bash
-python test.py --dataset Synapse --vit_name R50-ViT-B_16
+CUDA_VISIBLE_DEVICES=0 python train.py --dataset [dataset_name] --vit_name R50-ViT-B_16 --exp [exp_name] --gen_image  --consist_loss_weight [consist_loss_1_weight] --kd_loss_weight [consist_loss_2_weight]
 ```
++ set `[consist_loss_1_weight]` and `[consist_loss_2_weight]` greater than 0 to compute the consistency losses.
 
-## Reference
-* [Google ViT](https://github.com/google-research/vision_transformer)
-* [ViT-pytorch](https://github.com/jeonsworld/ViT-pytorch)
-* [segmentation_models.pytorch](https://github.com/qubvel/segmentation_models.pytorch)
++ enable `--gen_image` to use generated images.
 
-## Citations
+### Testing
 
-```bibtex
-@article{chen2021transunet,
-  title={TransUNet: Transformers Make Strong Encoders for Medical Image Segmentation},
-  author={Chen, Jieneng and Lu, Yongyi and Yu, Qihang and Luo, Xiangde and Adeli, Ehsan and Wang, Yan and Lu, Le and Yuille, Alan L., and Zhou, Yuyin},
-  journal={arXiv preprint arXiv:2102.04306},
-  year={2021}
-}
+- Run the test script. It supports testing for both 2D images and 3D volumes.
+
+```bash
+python test.py --dataset [dataset_name] --vit_name R50-ViT-B_16 --exp [exp_name]
 ```

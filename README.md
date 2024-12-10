@@ -1,8 +1,8 @@
 # S2S2: Semantic Stacking for Robust Semantic Segmentation in Medical Image 
 
-Official implementation of [S2S2: Semantic Stacking for Robust Semantic Segmentation in Medical Image](url).
+Official implementation of [AAAI2025] [S2S2: Semantic Stacking for Robust Semantic Segmentation in Medical Image](url).
 
-S2S2 is a a training pipeline that improves the robustness of a medical image segmentation model.
+S2S2 is a training pipeline that improves the robustness of a medical image segmentation model.
 
 ## Datasets
 

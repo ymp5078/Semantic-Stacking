@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./ACDC_gen_16 --dataset acdc --model_path '[checkpoint_path]'

@@ -1,0 +1,1 @@
+python main.py --base configs/efficientUnet_bSSFP_to_LEG.yaml --seed 23

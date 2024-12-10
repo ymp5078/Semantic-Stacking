@@ -66,14 +66,13 @@ if __name__ == "__main__":
     dataset_name = args.dataset
     dataset_config = {
         'ACDC': {
-            # 'Dataset': ACDC_dataset,  # datasets.dataset_acdc.BaseDataSets,
-            'root_path': '<Your data parent folder>/ACDC',
-            'gen_image_dir':'<Your controlnet parent folder>/ControlNet/ACDC_gen_16',
+            'root_path': '[data_dir]',
+            'gen_image_dir':'[gen_output_path]',
             'list_dir': None,
             'num_classes': 4,
         },
         'Synapse': {
-            'root_path': '../data/Synapse/train_npz',
+            'root_path': '[data_dir]/train_npz',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 9,
         },
@@ -85,7 +84,7 @@ if __name__ == "__main__":
     args.is_pretrain = True
     if args.exp is None:
         args.exp = 'TU_' + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
+    snapshot_path = "./model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)

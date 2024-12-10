@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./bSSFP_gen_16 --dataset bSSFP --model_path '[checkpoint_path]'

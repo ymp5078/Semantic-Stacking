@@ -21,7 +21,6 @@ from datasets.processed_ACDC import RandomGenerator, ACDCdataset
 from datasets import dataset_synapse # Synapse_dataset, RandomGenerator
 from datasets import dataset_acdc # BaseDataSets, RandomGenerator
 from datasets import dataset_polyp
-from datasets import fundus_dataloader
 from datasets import CardiacDataset
 from datasets import AbdominalDataset
 
@@ -116,11 +115,6 @@ if __name__ == '__main__':
             'list_dir': None,
             'num_classes': 2,
         },
-        'fundus': {
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/Domain_gen_data/fundus/',
-            'list_dir': None,
-            'num_classes': 3,
-        },
         'LGE': {
             'root_path': '',
             'list_dir': None,
@@ -156,9 +150,6 @@ if __name__ == '__main__':
         dataset = dataset_polyp.SegDataset(dataset=args.dataset, root=dataset_config['root_path'], transform=dataset_polyp.RandomGenerator(output_size=[img_size,img_size]))
     elif args.dataset == 'CVC':
         dataset = dataset_polyp.SegDataset(dataset=args.dataset, root=dataset_config['root_path'], transform=dataset_polyp.RandomGenerator(output_size=[img_size,img_size]))
-    elif 'fundus' in args.dataset:
-        splitid = int(args.dataset.split("_")[1])
-        dataset = fundus_dataloader.FundusSegmentation(base_dir=dataset_config['root_path'],transform=fundus_dataloader.composed_transforms_test,splitid=[splitid])
     elif 'LGE' in args.dataset:
         img_size = 192
         # splitid = int(args.dataset.split('_')[1])

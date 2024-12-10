@@ -87,7 +87,7 @@ if __name__ == "__main__":
     dataset_config = {
         'ACDC': {
             'Dataset': ACDC_dataset,  # datasets.dataset_acdc.BaseDataSets,
-            'volume_path': '<Your dataset parent folder>/ACDC',
+            'volume_path': '[data_dir]',
             'list_dir': None,
             'num_classes': 4,
             'z_spacing': 5,
@@ -95,8 +95,8 @@ if __name__ == "__main__":
         },
         'Synapse': {
             'Dataset': Synapse_dataset,
-            'volume_path': '<Your dataset parent folder>/test_vol_h5',
-            'list_dir': './lists/lists_Synapse',
+            'volume_path': '[data_dir]/test_vol_h5',
+            'list_dir': '[data_dir]/lists_Synapse',
             'num_classes': 9,
             'z_spacing': 1,
         },
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     # name the same snapshot defined in train script!
     if args.exp is None:
         args.exp = 'TU_' + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
+    snapshot_path = "./model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
@@ -145,12 +145,12 @@ if __name__ == "__main__":
     logging.info(str(args))
     logging.info(snapshot_name)
 
-    if args.is_savenii:
-        args.test_save_dir = '../predictions'
-        test_save_path = os.path.join(args.test_save_dir, args.exp, snapshot_name)
-        os.makedirs(test_save_path, exist_ok=True)
-    else:
-        test_save_path = None
+    # if args.is_savenii:
+    #     args.test_save_dir = './predictions'
+    #     test_save_path = os.path.join(args.test_save_dir, args.exp, snapshot_name)
+    #     os.makedirs(test_save_path, exist_ok=True)
+    # else:
+    test_save_path = None
     inference(args, net, test_save_path)
 
 

@@ -15,8 +15,8 @@ import torch
 import torchvision.transforms.functional as TF
 from .location_scale_augmentation import LocationScaleAugmentation
 
-BASEDIR = "/scratch/bbmr/ymp5078/segmentations/data/Polyp_data"
-GEN_BASEDIR = '/scratch/bbmr/ymp5078/segmentations/ControlNet'
+BASEDIR = '[Basedir]'
+GEN_BASEDIR = '[gen_dir]'
 LABEL_NAME = ['bg','fg']
 class SegDataset(data.Dataset):
     def __init__(

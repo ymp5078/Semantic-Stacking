@@ -66,9 +66,9 @@ if __name__ == "__main__":
     dataset_name = args.dataset
     dataset_config = {
         'Synapse': {
-            'root_path': '<Your data parent folder>/Synapse/train_npz',
-            'list_dir': '<Your data parent folder>/Synapse/lists_Synapse',
-            'gen_image_dir':'<Your ControlNet parent folder>/ControlNet/Synapse_gen_16',
+            'root_path': '[data_dir]/train_npz',
+            'list_dir': '[data_dir]/lists_Synapse',
+            'gen_image_dir':'[gen_output_path]',
             'num_classes': 9,
         },
     }
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     args.is_pretrain = True
     if args.exp is None:
         args.exp = 'TU_' + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
+    snapshot_path = "./model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)

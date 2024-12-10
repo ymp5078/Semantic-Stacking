@@ -1,0 +1,1 @@
+python train_sd21.py --dataset Kvasir

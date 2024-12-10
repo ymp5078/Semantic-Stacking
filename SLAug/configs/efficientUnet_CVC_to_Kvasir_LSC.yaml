@@ -36,6 +36,7 @@ data:
         modality:
           - CVC
         tile_z_dim: 3
+        use_gen_image: true
     validation:
       target: dataloaders.ColonDataset.get_validation
       params:

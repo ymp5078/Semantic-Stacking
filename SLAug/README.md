@@ -1,27 +1,6 @@
-# SLAug
+# Setup for SLAug
 
-## Rethinking Data Augmentation for Single-source Domain Generalization in Medical Image Segmentation, AAAI 2023. [ArXiv](https://arxiv.org/pdf/2211.14805.pdf)
-Zixian Su*, Kai Yao*, Xi Yang, Qiufeng Wang, Jie Sun, Kaizhu Huang \
-Both University of Liverpool and Xi'an Jiaotong-liverpool University \
-(*equal contribution)
-
-**Abstract**
-
-Single-source domain generalization (SDG) in medical image segmentation is a challenging yet essential task as domain shifts are quite common among clinical image datasets. Previous attempts most conduct global-only/random augmentation.  Their augmented samples are usually insufficient in diversity and informativeness, thus failing to cover the possible target domain distribution. In this paper, we rethink the data augmentation strategy for SDG in medical image segmentation. Motivated by the class-level representation invariance and style mutability of medical images, we hypothesize that  unseen target data can be sampled from a linear combination of C (the class number) random variables, where each variable follows a location-scale distribution at the class level. Accordingly, data augmented can be readily made by sampling the random variables through a general form. On the empirical front, we implement such strategy with constrained Bezier transformation on both  global and  local (i.e. class-level) regions, which can largely increase the augmentation diversity.  A Saliency-balancing Fusion mechanism is further proposed to enrich the informativeness by engaging the gradient information, guiding augmentation with proper orientation and magnitude. As an important contribution, we prove theoretically that our proposed augmentation can lead to an upper bound of the generalization risk on the unseen  target domain, thus confirming our hypothesis. Combining the two strategies, our Saliency-balancing Location-scale Augmentation (SLAug) exceeds the state-of-the-art works by a large margin in two challenging SDG tasks.
-
-## News:
-\[2022/12/1\] We release the training and inference code, even including the pretrained checkpoints and the processed dataset!
-
-\[2022/11/19\] Our paper "Rethinking Data Augmentation for Single-source Domain Generalization in Medical Image Segmentation" accepted by AAAI2023!
-
-
-## 1. Installation
-
-Clone this repo.
-```bash
-git clone https://github.com/Kaiseem/SLAug.git
-cd SLAug/
-```
+Please refer to the original GitHub repo [SLAug](https://github.com/Kaiseem/SLAug) for details. The basic setup is below.
 
 This code requires PyTorch 1.10 and python 3+. Please install dependencies by
 ```bash
@@ -29,7 +8,7 @@ pip install -r requirements.txt
 ```
 
 
-## 2. Data preparation
+## Data preparation
 
 We conduct datasets preparation following [CSDG](https://github.com/cheng-01037/Causality-Medical-Image-Domain-Generalization)
 
@@ -74,7 +53,7 @@ run `./data/abdominal/SABS/s3_resample_and_roi.ipynb` to do resampling and roi e
 
 The details for cardiac datasets will be given later.
 
-We also provide the [processed datasets](https://drive.google.com/file/d/1WlXGt3Nffzu1bn6co-qaidHjqWH51smU/view?usp=share_link). Download and unzip the file where the folder structure should look this:
+The original authors also provide the [processed datasets](https://drive.google.com/file/d/1WlXGt3Nffzu1bn6co-qaidHjqWH51smU/view?usp=share_link). Download and unzip the file where the folder structure should look this:
 
 ```none
 SLAug
@@ -92,59 +71,13 @@ SLAug
 ├── ...
 ```
 
-## 3. Inference Using Pretrained Model
-Download the [pretrained model](https://drive.google.com/file/d/10VnqWWgiqsU4c5bTz77GKgEtASdlXd29/view?usp=share_link) and unzip the file where the folder structure should look this:
+Please modify `BASEDIR` and `GEN_BASEDIR` in [AbdominalDataset.py](./dataloaders/AbdominalDataset.py), [CardiacDataset.py](./dataloaders/CardiacDataset.py), and [ColonDataset.py](./dataloaders/ColonDataset.py).
 
-```none
-SLAug
-├── ...
-├── logs
-│   ├── 2022-xxxx-xx-xx-xx
-│   │   ├── checkpoints
-│   │   │   ├── latest.pth
-│   │   ├── configs
-│   │   │   ├── xx.yaml
-├── ...
-```
+## Usage
 
-<details>
-  <summary>
-    <b>1) Cross-modality Abdominal Dataset</b>
-  </summary>
+You can find the training scripts under [scripts](./scripts/)
 
-For direction CT -> MRI (DICE 88.63), run the command 
-```bash
-python test.py -r logs/2022-08-06T15-20-35_seed23_efficientUnet_SABSCT
-```
-
-For direction MRI -> CT (DICE 83.05), run the command 
-```bash
-python test.py -r logs/2022-08-06T11-03-14_seed23_efficientUnet_CHAOS
-```
-
-
-</details>
-
-<details>
-  <summary>
-    <b>2)  Cross-sequence Cardiac Dataset</b>
-  </summary>
-  
-For direction bSSFP -> LEG (DICE 86.69), run the command 
-```bash
-python test.py -r logs/2022-08-05T21-44-50_seed23_efficientUnet_bSSFP_to_LEG
-```
-
-For direction LEG -> bSSFP (DICE 87.67), run the command 
-```bash
-python test.py -r logs/2022-08-06T00-20-02_seed23_efficientUnet_LEG_to_bSSFP
-```
-</details>
-
-
-## 4. Training the model
-To reproduce the performance, you need one 3090 GPU
-
+### Training the model
 
 <details>
   <summary>
@@ -153,13 +86,14 @@ To reproduce the performance, you need one 3090 GPU
   
 For direction CT -> MRI, run the command 
 ```bash
-python main.py --base configs/efficientUnet_SABSCT_to_CHAOS.yaml --seed 23
+python main.py --base configs/efficientUnet_SABSCT_to_CHAOS_LSC.yaml --seed 23
 ```
 
 For direction MRI -> CT, run the command 
 ```bash
-python main.py --base configs/efficientUnet_CHAOS_to_SABSCT.yaml --seed 23
+python main.py --base configs/efficientUnet_CHAOS_to_SABSCT_LSC.yaml --seed 23
 ```
+
 </details>
 
 <details>
@@ -169,27 +103,84 @@ python main.py --base configs/efficientUnet_CHAOS_to_SABSCT.yaml --seed 23
   
 For direction bSSFP -> LEG, run the command 
 ```bash
-python main.py --base configs/efficientUnet_bSSFP_to_LEG.yaml --seed 23
+python main.py --base configs/efficientUnet_bSSFP_to_LEG_LSC.yaml --seed 23
 ```
 
 For direction LEG -> bSSFP, run the command 
 ```bash
-python main.py --base configs/efficientUnet_LEG_to_bSSFP.yaml --seed 23
+python main.py --base configs/efficientUnet_LEG_to_bSSFP_LSC.yaml --seed 23
 ```
 </details>
 
-## Acknowledgements
+<details>
+  <summary>
+    <b>2)  Cross-site Colon Dataset</b>
+  </summary>
 
-Our codes are built upon [CSDG](https://github.com/cheng-01037/Causality-Medical-Image-Domain-Generalization), thanks for their contribution to the community and the development of researches!
-
-## Citation
-If our work or code helps you, please consider to cite our paper. Thank you!
-
+For direction CVC -> Kvasir, run the command 
+```bash
+python main.py --base configs/efficientUnet_CVC_to_Kvasir_LSC.yaml --seed 23
 ```
-@inproceedings{su2023slaug,
-  title={Rethinking Data Augmentation for Single-source Domain Generalization in Medical Image Segmentation},
-  author={Zixian Su, Kai Yao, Xi Yang, Qiufeng Wang, Jie Sun, Kaizhu Huang},
-  booktitle={AAAI},
-  year={2023},
-}
+
+For direction Kvasir -> CVC, run the command 
+```bash
+python main.py --base configs/efficientUnet_Kvasir_to_CVC_LSC.yaml --seed 23
 ```
+
+</details>
+
+
+### Inference
+
+<details>
+  <summary>
+    <b>1) Cross-modality Abdominal Dataset</b>
+  </summary>
+
+For direction CT -> MRI (DICE 88.63), run the command 
+```bash
+python test.py -r logs/2024-03-04T13-31-45_seed23_efficientUnet_SABSCT_to_CHAOS_LSC --epoch 1099
+```
+
+For direction MRI -> CT (DICE 83.05), run the command 
+```bash
+python test.py -r logs/2024-03-04T13-31-45_seed23_efficientUnet_CHAOS_to_SABSCT_LSC --epoch 1099
+```
+
+
+</details>
+
+<details>
+  <summary>
+    <b>2)  Cross-sequence Cardiac Dataset</b>
+  </summary>
+  
+For direction bSSFP -> LEG, run the command 
+```bash
+python test.py -r logs/2024-03-04T11-06-43_seed23_efficientUnet_bSSFP_to_LEG_LSC
+```
+
+For direction LEG -> bSSFP, run the command 
+```bash
+python test.py -r logs/2024-03-04T13-29-38_seed23_efficientUnet_LEG_to_bSSFP_LSC
+```
+</details>
+
+<details>
+  <summary>
+    <b>2)  Cross-site Colon Dataset</b>
+  </summary>
+
+For direction CVC -> Kvasir, run the command 
+```bash
+python test.py -r /logs/2024-03-04T13-33-29_seed23_efficientUnet_CVC_to_Kvasir_LSC --use_2d
+```
+
+For direction Kvasir -> CVC, run the command 
+```bash
+python test.py -r logs/2024-03-04T14-20-59_seed23_efficientUnet_Kvasir_to_CVC_LSC --use_2d
+```
+
+</details>
+
+

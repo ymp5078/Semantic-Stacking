@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./Kvasir_gen_16 --dataset Kvasir --model_path '[checkpoint_path]'

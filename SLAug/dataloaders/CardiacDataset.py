@@ -11,8 +11,8 @@ from functools import partial
 from .location_scale_augmentation import LocationScaleAugmentation
 hostname = platform.node()
 # folder for datasets
-BASEDIR = '/scratch/bbmr/ymp5078/segmentations/data/SLAug_data/data/cardiac/processed'
-GEN_BASEDIR = '/scratch/bbmr/ymp5078/segmentations/ControlNet'
+BASEDIR = '[Basedir]'
+GEN_BASEDIR = '[gen_dir]'
 print(f'Running on machine {hostname}, using dataset from {BASEDIR}')
 LABEL_NAME = ["bg", "Myocardium",  "Lventricle","Rventricle"]
 from dataloaders.niftiio import read_nii_bysitk

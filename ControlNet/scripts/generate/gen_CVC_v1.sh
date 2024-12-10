@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./CVC_gen_16 --dataset CVC --model_path '[checkpoint_path]'

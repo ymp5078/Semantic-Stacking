@@ -1,0 +1,1 @@
+python main.py --base configs/efficientUnet_CVC_to_Kvasir.yaml --seed 23

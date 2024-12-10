@@ -1,0 +1,1 @@
+python generate_seg2image.py --out ./CHAOST2_gen_16 --dataset CHAOST2 --model_path '[checkpoint_path]'

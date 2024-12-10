@@ -3,15 +3,11 @@ import os
 import argparse
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader
-from tutorial_dataset import MyDataset
 from cldm.logger import ImageLogger
 from cldm.model import create_model, load_state_dict
-from datasets.processed_ACDC import RandomGenerator, ACDCdataset
 from datasets import dataset_synapse # Synapse_dataset, RandomGenerator
 from datasets import dataset_acdc # BaseDataSets, RandomGenerator
 from datasets import dataset_polyp
-from datasets import fundus_dataloader
-# from datasets import prostate_dataloader
 from datasets import CardiacDataset
 from datasets import AbdominalDataset
 from torchvision import transforms
@@ -29,7 +25,6 @@ if __name__ == '__main__':
     
     # Configs
     resume_path = './models/control_sd21_ini.ckpt'
-    train_path = '/scratch/bbmr/ymp5078/segmentations/data/processed_ACDC'
     img_size = 512
     batch_size = 16
     logger_freq = 300
@@ -37,6 +32,53 @@ if __name__ == '__main__':
     sd_locked = True
     only_mid_control = False
 
+    # Misc
+    dataset_config = {
+        'acdc': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 4,
+        },
+        'Synapse': {
+            'root_path': '[data_dir]',
+            'list_dir': '[data_dir]/lists_Synapse',
+            'num_classes': 9,
+        },
+        'Kvasir': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 2,
+        },
+        'CVC': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 2,
+        },
+        'LGE': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 4,
+        },
+        'bSSFP': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 4,
+        },
+        
+        'SABSCT': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 5,
+        },
+        'CHAOST2': {
+            'root_path': '[data_dir]',
+            'list_dir': None,
+            'num_classes': 5,
+        },
+        
+    }[args.dataset.split('_')[0]]
+
+    
 
     # First use cpu to load models. Pytorch Lightning will automatically move it to GPUs.
     model = create_model('./models/cldm_v21.yaml').cpu()
@@ -45,59 +87,6 @@ if __name__ == '__main__':
     model.sd_locked = sd_locked
     model.only_mid_control = only_mid_control
 
-
-    # Misc
-    
-    dataset_config = {
-        'acdc': {
-            # 'Dataset': ACDC_dataset,  # datasets.dataset_acdc.BaseDataSets,
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/ACDC',
-            'list_dir': None,
-            'num_classes': 4,
-        },
-        'Synapse': {
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/Synapse/train_npz',
-            'list_dir': '/scratch/bbmr/ymp5078/segmentations/data/Synapse/lists_Synapse',
-            'num_classes': 9,
-        },
-        'Kvasir': {
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/Kvasir-SEG/',
-            'list_dir': None,
-            'num_classes': 2,
-        },
-        'CVC': {
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/Polyp_data/CVC-ClinicDB/',
-            'list_dir': None,
-            'num_classes': 2,
-        },
-        'fundus': {
-            'root_path': '/scratch/bbmr/ymp5078/segmentations/data/Domain_gen_data/fundus/',
-            'list_dir': None,
-            'num_classes': 3,
-        },
-        'LGE': {
-            'root_path': '',
-            'list_dir': None,
-            'num_classes': 4,
-        },
-        'bSSFP': {
-            'root_path': '',
-            'list_dir': None,
-            'num_classes': 4,
-        },
-        
-        'SABSCT': {
-            'root_path': '',
-            'list_dir': None,
-            'num_classes': 5,
-        },
-        'CHAOST2': {
-            'root_path': '',
-            'list_dir': None,
-            'num_classes': 5,
-        },
-        
-    }[args.dataset.split('_')[0]]
     if args.dataset == 'acdc':
         dataset = dataset_acdc.BaseDataSets(base_dir=dataset_config['root_path'], split="train", transform=transforms.Compose([
                         dataset_acdc.RandomGenerator([img_size,img_size])]))
@@ -109,9 +98,6 @@ if __name__ == '__main__':
         dataset = dataset_polyp.SegDataset(dataset=args.dataset, root=dataset_config['root_path'], transform=dataset_polyp.RandomGenerator(output_size=[img_size,img_size]))
     elif args.dataset == 'CVC':
         dataset = dataset_polyp.SegDataset(dataset=args.dataset, root=dataset_config['root_path'], transform=dataset_polyp.RandomGenerator(output_size=[img_size,img_size]))
-    elif 'fundus' in args.dataset:
-        splitid = int(args.dataset.split('_')[1])
-        dataset = fundus_dataloader.FundusSegmentation(base_dir=dataset_config['root_path'],transform=fundus_dataloader.composed_transforms_test,splitid=[splitid])
     elif 'LGE' in args.dataset:
         # splitid = int(args.dataset.split('_')[1])
         dataset = CardiacDataset.get_gen_training(modality=['LGE'], location_scale=None,  tile_z_dim = 3)

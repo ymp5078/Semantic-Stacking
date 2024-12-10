@@ -16,7 +16,7 @@ from dataloaders.location_scale_augmentation import LocationScaleAugmentation
 from utils.visualize import get_color_pallete, vocpallete
 hostname = platform.node()
 # folder for datasets
-BASEDIR = '/scratch/bbmr/ymp5078/segmentations/data/SLAug_data/data/abdominal/'
+BASEDIR = '[data_dir]'
 print(f'Running on machine {hostname}, using dataset from {BASEDIR}')
 LABEL_NAME = ["bg", "liver", "rk", "lk", "spleen"]
 
