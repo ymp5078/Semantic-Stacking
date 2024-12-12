@@ -1,6 +1,6 @@
 # Dataloader for abdominal images
 import sys
-sys.path.append("/scratch/bbmr/ymp5078/segmentations/SLAug")
+sys.path.append("[absolute_path]/semantic_stacking/SLAug")
 
 
 import glob
@@ -210,37 +210,7 @@ class CardiacDataset(torch_data.Dataset):
         return out_list
 
     def __getitem__(self, index):
-        # index = index % len(self.actual_dataset)
         curr_dict = self.actual_dataset[index]
-        # if self.is_train:
-        #     if self.location_scale is not None:
-        #         img = curr_dict["img"].copy()
-        #         lb = curr_dict["lb"].copy()
-        #         img = self.denorm_(img, curr_dict['vol_info'])
-
-        #         GLA = self.location_scale.Global_Location_Scale_Augmentation(img.copy())
-        #         GLA = self.renorm_(GLA, curr_dict['vol_info'])
-
-        #         LLA = self.location_scale.Local_Location_Scale_Augmentation(img.copy(), lb.astype(np.int32))
-        #         LLA = self.renorm_(LLA, curr_dict['vol_info'])
-        #         comp = np.concatenate([GLA, LLA, curr_dict["lb"]], -1)
-        #         if self.transforms:
-        #             timg, lb = self.transforms(comp, c_img=2, c_label=1, nclass=self.nclass, is_train=self.is_train,
-        #                                        use_onehot=False)
-        #             GLA, LLA = np.split(timg, 2, -1)
-        #         img = GLA
-
-        #         aug_img = LLA
-        #         aug_img = np.float32(aug_img)
-        #         aug_img = np.transpose(aug_img, (2, 0, 1))
-        #         aug_img = torch.from_numpy(aug_img)
-        #     else:
-        #         comp = np.concatenate([curr_dict["img"], curr_dict["lb"]], axis=-1)
-        #         if self.transforms:
-        #             img, lb = self.transforms(comp, c_img=1, c_label=1, nclass=self.nclass, is_train=self.is_train,
-        #                                       use_onehot=False)
-        #         aug_img = 1
-        # else:
         img = curr_dict['img']
         img= self.denorm_(img,curr_dict['vol_info'])
         lb = curr_dict['lb']
@@ -249,7 +219,6 @@ class CardiacDataset(torch_data.Dataset):
         img = np.float32(img)
         lb = np.float32(lb)
 
-        # img = np.transpose(img, (2, 0, 1))
         lb  = np.transpose(lb, (2, 0, 1))
 
         img = torch.from_numpy( img )
@@ -277,13 +246,11 @@ class CardiacDataset(torch_data.Dataset):
         gt_seg = get_color_pallete(sample['labels'].numpy()).convert('RGB')
         gt_seg = torch.from_numpy(np.array(gt_seg).astype(np.float32))
         unique_classes = np.unique(sample['labels'].numpy())
-        # print(img.max(),img.min())
         if self.domains[0] == 'LGE':
             prompt = "A 2D slice of a cardiac MRI scan using balanced steady-state free precession showing " + ", ".join([LABEL_NAME[c] for c in unique_classes])
         else:
             prompt = "A 2D slice of a cardiac MRI scan using late gadolinium enhanced showing " + ", ".join([LABEL_NAME[c] for c in unique_classes])
         
-        # print(sample['images'].shape,gt_seg.shape)
         return dict(jpg=sample['images'], txt=prompt, hint=gt_seg, path=f"{sample['scan_id']}_{z_id}")
 
     def denorm_(self, img, vol_info):

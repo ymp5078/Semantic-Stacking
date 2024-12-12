@@ -64,32 +64,6 @@ class KDLoss(nn.Module):
                            ) * self.T * self.T
         return kd_loss * self.kl_loss_factor
     
-# class BinaryKDLoss(nn.Module):
-#     '''
-# 	Distilling the Knowledge in a Neural Network
-# 	https://arxiv.org/pdf/1503.02531.pdf
-# 	'''
-#     def __init__(self, kl_loss_factor=1.0, T=1.0):
-#         super(BinaryKDLoss, self).__init__()
-#         self.T = T
-#         self.kl_loss_factor = kl_loss_factor
-
-#     def forward(self, s_out, t_out):
-#         # resize to aviod overflow
-#         B, H, W = s_out.shape
-#         prob_s_out = torch.sigmoid(s_out / self.T)
-#         s_out = torch.stack([1-prob_s_out,prob_s_out],dim=1) # B, 2, H, W
-#         s_out = s_out.permute(0,2,3,1).reshape(B*H*W,2)
-
-#         prob_t_out = torch.sigmoid(t_out / self.T)
-#         t_out = torch.stack([1-prob_t_out,prob_t_out],dim=1) # B, 2, H, W
-#         t_out = t_out.permute(0,2,3,1).reshape(B*H*W,2)
-
-#         kd_loss = F.kl_div(torch.log(prob_s_out), 
-#                            t_out, 
-#                            reduction='batchmean',
-#                            ) * self.T * self.T
-#         return kd_loss * self.kl_loss_factor
     
 class BinaryKDLoss(nn.Module):
     '''

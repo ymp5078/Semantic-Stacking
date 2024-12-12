@@ -77,10 +77,9 @@ class Synapse_dataset(Dataset):
             data = np.load(data_path)
             image, label = data['image'], data['label']
             sample = {'image': image, 'label': label}
-            if self.gen_image_dir is not None:
+            if self.gen_image_dir is not None: # load generated image
                 case = self.sample_list[idx].strip('\n')
                 gen_image_path = os.path.join(self.gen_image_dir,case+'.npz')
-                # print(gen_image_path)
                 with np.load(gen_image_path) as npz_data:
                     gen_image = npz_data['image']
                 gen_image = gen_image[np.random.choice(len(gen_image))]

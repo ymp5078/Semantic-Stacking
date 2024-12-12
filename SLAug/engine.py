@@ -80,15 +80,13 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                 loss_dict = criterion.get_loss(pred,lbl)
                 losses = sum(loss_dict[k] * criterion.weight_dict[k] for k in loss_dict.keys())
                 gen_logits, gen_features, gen_decoder_output = model(gen_img,return_features=True)
-                # print()
-                # print(aug_logits.shape,aug_features[-1].shape)
+
+                # Compute the local semantic consistency loss
                 lsc_loss_dict = criterion.get_lsc_loss(aug_logits=gen_decoder_output,logits=decoder_output,aug_features=gen_features,features=features)
                 lsc_loss = sum(lsc_loss_dict[k] * criterion.lsc_weight_dict[k] for k in lsc_loss_dict.keys() if k in criterion.lsc_weight_dict)
-                # lsc_loss.backward(retain_graph=True)
                 losses += lsc_loss
                 gen_loss_dict = criterion.get_loss(gen_logits, lbl)
                 gen_losses = sum(gen_loss_dict[k] * criterion.weight_dict[k] for k in gen_loss_dict.keys() if k in criterion.weight_dict)
-                # gen_losses.backward(retain_graph=True)
                 losses += gen_losses
             else:
                 pred = model(img)
@@ -106,21 +104,20 @@ def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     loss_dict = criterion.get_loss(pred,lbl)
                     losses = sum(loss_dict[k] * criterion.weight_dict[k] for k in loss_dict.keys())
                     gen_logits, gen_features, gen_decoder_output = model(gen_img,return_features=True)
-                    # print()
-                    # print(aug_logits.shape,aug_features[-1].shape)
+                    # Compute the local semantic consistency loss
                     lsc_loss_dict = criterion.get_lsc_loss(aug_logits=gen_decoder_output,logits=decoder_output,aug_features=gen_features,features=features)
                     lsc_loss = sum(lsc_loss_dict[k] * criterion.lsc_weight_dict[k] for k in lsc_loss_dict.keys() if k in criterion.lsc_weight_dict)
-                    # lsc_loss.backward(retain_graph=True)
+                    
                     losses += lsc_loss
                     gen_loss_dict = criterion.get_loss(gen_logits, lbl)
                     gen_losses = sum(gen_loss_dict[k] * criterion.weight_dict[k] for k in gen_loss_dict.keys() if k in criterion.weight_dict)
-                    # gen_losses.backward(retain_graph=True)
+                    
                     losses += gen_losses
                 else:
                     pred = model(img)
                     loss_dict = criterion.get_loss(pred,lbl)
                     losses = sum(loss_dict[k] * criterion.weight_dict[k] for k in loss_dict.keys())
-            # optimizer.zero_grad()
+            
             grad_scaler.scale(losses).backward()
             grad_scaler.step(optimizer)
             grad_scaler.update()
@@ -173,10 +170,8 @@ def train_one_epoch_SBF(model: torch.nn.Module, criterion: torch.nn.Module,
             visual_dict['GLA']=GLA_img.detach().cpu().numpy()[0].mean(0)
             visual_dict['LLA']=LLA_img.detach().cpu().numpy()[0].mean(0)
             visual_dict['GT']=lbl.detach().cpu().numpy()[0]
-            # print(visual_dict['GT'].shape)
             if LSC_config and LSC_config.usage:
                 visual_dict['gen']=gen_img.detach().cpu().numpy()[0].mean(0)
-                # visual_dict['aug_gen']=gen_LLA_image.detach().cpu().numpy()[0].mean(0)
         else:
             visual_dict=None
 
@@ -190,37 +185,12 @@ def train_one_epoch_SBF(model: torch.nn.Module, criterion: torch.nn.Module,
                 LSC_config.mask = False
             logits, features, decoder_output = model(input_var,return_features=True)
 
-            # compute lsc loss
             
             loss_dict = criterion.get_loss(logits, lbl)
             losses = sum(loss_dict[k] * criterion.weight_dict[k] for k in loss_dict.keys() if k in criterion.weight_dict)
             
-            # gen_var = Variable(gen_img, requires_grad=True)
-            # gen_logits, gen_features, gen_decoder_output = model(gen_var,return_features=True)
-            # lsc_loss_dict = criterion.get_lsc_loss(aug_logits=gen_decoder_output,logits=decoder_output,aug_features=gen_features,features=features,seg_masks=lbl if LSC_config.mask else None)
-            # lsc_loss = sum(lsc_loss_dict[k] * criterion.lsc_weight_dict[k] for k in lsc_loss_dict.keys() if k in criterion.lsc_weight_dict)
-            # losses = lsc_loss+losses
-            # # # lsc_loss.backward(retain_graph=True)
-            # gen_loss_dict = criterion.get_loss(gen_logits, lbl)
-            # gen_losses = sum(gen_loss_dict[k] * criterion.weight_dict[k] for k in gen_loss_dict.keys() if k in criterion.weight_dict)
-            # # (lsc_loss+gen_losses).backward(retain_graph=True)
-            # losses = 0.5 *  gen_losses+losses
             losses.backward(retain_graph=True)
             
-            # saliency for the generated images
-            # gen_gradient = torch.sqrt(torch.mean(gen_var.grad ** 2, dim=1, keepdim=True)).detach()
-
-            # gen_saliency= get_SBF_map(gen_gradient,config.grid_size)
-
-            # if visual_dict is not None:
-            #     visual_dict['gen_GLA_pred']=torch.argmax(gen_logits,1).cpu().numpy()[0]
-
-            # if visual_dict is not None:
-            #     visual_dict['gen_GLA_saliency']= gen_saliency.detach().cpu().numpy()[0,0]
-
-            # gen_mixed_img = gen_img.detach() * gen_saliency + gen_LLA_image * (1 - gen_saliency)
-            # if visual_dict is not None:
-            #     visual_dict['gen_SBF']= gen_mixed_img.detach().cpu().numpy()[0].mean(0)
             
         else:
             logits = model(input_var)
@@ -232,7 +202,6 @@ def train_one_epoch_SBF(model: torch.nn.Module, criterion: torch.nn.Module,
         gradient = torch.sqrt(torch.mean(input_var.grad ** 2, dim=1, keepdim=True)).detach()
 
         saliency=get_SBF_map(gradient,config.grid_size)
-        # print(saliency.shape,LLA_img.shape)
 
         if visual_dict is not None:
             visual_dict['GLA_pred']=torch.argmax(logits,1).cpu().numpy()[0]
@@ -251,46 +220,20 @@ def train_one_epoch_SBF(model: torch.nn.Module, criterion: torch.nn.Module,
             except:
                 LSC_config.mask = False
             
-            # aug_logits, aug_features, aug_decoder_output = model(aug_var,return_features=True)
-            
-            # aug_loss_dict = criterion.get_loss(aug_logits, lbl)
-            # # aug_losses = sum(aug_loss_dict[k] * criterion.weight_dict[k] for k in aug_loss_dict.keys() if k in criterion.weight_dict)
-
-            # aug_losses = 0
-            # gen_img = GLA_img.detach() * saliency + gen_img * (1 - saliency)
-            # gen_var = Variable(gen_img, requires_grad=False)
-            # gen_logits, gen_features, gen_decoder_output = model(gen_var,return_features=True)
-            # # print()
-            # # print(aug_logits.shape,aug_features[-1].shape)
-            # lsc_loss_dict = criterion.get_lsc_loss(aug_logits=gen_decoder_output,logits=decoder_output,aug_features=gen_features,features=features)
-            # lsc_loss = sum(lsc_loss_dict[k] * criterion.lsc_weight_dict[k] for k in lsc_loss_dict.keys() if k in criterion.lsc_weight_dict)
-            # # lsc_loss.backward(retain_graph=True)
-            # aug_losses += lsc_loss
-            # gen_loss_dict = criterion.get_loss(gen_logits, lbl)
-            # gen_losses = sum(gen_loss_dict[k] * criterion.weight_dict[k] for k in gen_loss_dict.keys() if k in criterion.weight_dict)
-            # # gen_losses.backward(retain_graph=True)
-            # aug_losses += gen_losses
-            
-            # aug_losses.backward()
 
             aug_logits, aug_features, aug_decoder_output = model(aug_var,return_features=True)
             
             aug_loss_dict = criterion.get_loss(aug_logits, lbl)
             aug_losses = sum(aug_loss_dict[k] * criterion.weight_dict[k] for k in aug_loss_dict.keys() if k in criterion.weight_dict)
 
-            # gen_img = gen_img.detach() * saliency + gen_LLA_image * (1 - saliency)
             gen_var = Variable(gen_img, requires_grad=False)
-            # print(gen_var.shape)
             gen_logits, gen_features, gen_decoder_output = model(gen_var,return_features=True)
             gen_loss_dict = criterion.get_loss(gen_logits, lbl)
             gen_losses = sum(gen_loss_dict[k] * criterion.weight_dict[k] for k in gen_loss_dict.keys() if k in criterion.weight_dict)
-            # gen_losses.backward(retain_graph=True)
             aug_losses = aug_losses + 0.1 * gen_losses
-            # print()
-            # print(aug_logits.shape,aug_features[-1].shape)
+            # Compute the local semantic consistency loss
             lsc_loss_dict = criterion.get_lsc_loss(aug_logits=gen_decoder_output,logits=aug_decoder_output,aug_features=gen_features,features=aug_features,seg_masks=lbl if LSC_config.mask else None)
             lsc_loss = sum(lsc_loss_dict[k] * criterion.lsc_weight_dict[k] for k in lsc_loss_dict.keys() if k in criterion.lsc_weight_dict)
-            # lsc_loss.backward(retain_graph=True)
             aug_losses += 0.1 * lsc_loss
             
             aug_losses.backward()
@@ -394,7 +337,6 @@ def evaluate_2d(model: torch.nn.Module, data_loader: Iterable, device: torch.dev
         gts.append(lbl.cpu().numpy())
         one_hot_pred=convert_to_one_hot(pred,num_classes)
         one_hot_gt=convert_to_one_hot(lbl,num_classes)
-        # dice=compute_meandice(one_hot_pred,one_hot_gt,include_background=False)
         one_hot_pred=one_hot_pred.cpu().numpy()[:,1].reshape(-1)
         one_hot_gt=one_hot_gt.cpu().numpy()[:,1].reshape(-1)
         # print(one_hot_pred.shape,one_hot_gt.shape)
@@ -402,8 +344,6 @@ def evaluate_2d(model: torch.nn.Module, data_loader: Iterable, device: torch.dev
         IoU.append(jaccard_score(one_hot_gt, one_hot_pred))
         precision.append(precision_score(one_hot_gt, one_hot_pred))
         recall.append(recall_score(one_hot_gt, one_hot_pred))
-    # dices=np.concatenate(dices,0)
-    # dices=np.nanmean(dices,0)
     
     print(
             "\rTest: [Model scores: Dice={:.6f}, mIoU={:.6f}, precision={:.6f}, recall={:.6f}".format(
@@ -426,7 +366,6 @@ def prediction_wrapper(model, test_loader, epoch, label_name, mode = 'base', sav
     model.eval()
     with torch.no_grad():
         out_prediction_list = {} # a buffer for saving results
-        # recomp_img_list = []
         for idx, batch in tqdm(enumerate(test_loader), total = len(test_loader)):
             if batch['is_start']:
                 slice_idx = 0
@@ -455,8 +394,6 @@ def prediction_wrapper(model, test_loader, epoch, label_name, mode = 'base', sav
             if batch['is_end']:
                 out_prediction_list[scan_id_full]['pred'] = curr_pred
                 out_prediction_list[scan_id_full]['gth'] = curr_gth
-                # if opt.phase == 'test':
-                #     recomp_img_list.append(curr_img)
 
         print("Epoch {} test result on mode {} segmentation are shown as follows:".format(epoch, mode))
         error_dict, dsc_table, domain_names = eval_list_wrapper(out_prediction_list, len(label_name),label_name)

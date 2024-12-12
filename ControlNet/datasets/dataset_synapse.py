@@ -33,16 +33,11 @@ class RandomGenerator(object):
     def __call__(self, sample):
         image, label = sample['image'], sample['label']
 
-        # if random.random() > 0.5:
-        #     image, label = random_rot_flip(image, label)
-        # elif random.random() > 0.5:
-        #     image, label = random_rotate(image, label)
         x, y = image.shape
         if x != self.output_size[0] or y != self.output_size[1]:
             image = zoom(image, (self.output_size[0] / x, self.output_size[1] / y), order=3)  # why not 3?
             label = zoom(label, (self.output_size[0] / x, self.output_size[1] / y), order=0)
         image = torch.from_numpy(image.astype(np.float32)).unsqueeze(-1).expand((-1,-1,3))
-        # print(image.max(),image.min())
         gt_seg = get_color_pallete(label).convert('RGB')
 
         # to [0,1]
@@ -83,5 +78,4 @@ class Synapse_dataset(Dataset):
         
         unique_classes = np.unique(sample['label'])
         prompt = "A 2D slice of a abdomen CT scan showing " + ", ".join([self.class_names[c] for c in unique_classes])
-        # print(sample['image'].shape,sample['seg_image'].shape)
         return dict(jpg=sample['image'], txt=prompt, hint=sample['seg_image'], path=sample['case_name'])

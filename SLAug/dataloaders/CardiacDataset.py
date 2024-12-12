@@ -98,9 +98,6 @@ class CardiacDataset(torch_data.Dataset):
         # load to memory
         self.actual_dataset = self.__read_dataset()
         self.size = len(self.actual_dataset) # 2D
-        # print(f'Applying Location Scale Augmentation on {mode} split')
-        # self.location_scale = LocationScaleAugmentation(vrange=(0.,1.), background_threshold=0.01)
-        # # self.use_local_scale = location_scale
         
         if location_scale:
             print(f'Applying Location Scale Augmentation on {mode} split')
@@ -214,68 +211,44 @@ class CardiacDataset(torch_data.Dataset):
         curr_dict = self.actual_dataset[index]
         gen_image = 1
         if self.is_train:
-            if self.use_gen_image:
+            if self.use_gen_image: # load generated image
                 gen_image_path = os.path.join(GEN_BASEDIR,f"{self.domains[0]}_gen_16",f"{curr_dict['scan_id']}_{curr_dict['z_id']}.npz")
                 if os.path.exists(gen_image_path):
                     with np.load(gen_image_path) as npz_data:
                         gen_image = npz_data['image']
                         gen_image = gen_image[np.random.choice(len(gen_image))].mean(-1,keepdims=True)
-                        gen_image = self.renorm_(gen_image, curr_dict['vol_info'])# gen_image = np.clip(gen_image[np.random.choice(len(gen_image))].mean(-1,keepdims=True),0,1)
-                        # no need to norm 
-                        # print
-                        
-                        # print('gen_image',gen_image.mean(),gen_image.max(),gen_image.min(),gen_image.shape)
-                        # gen_image = self.denorm_(gen_image, curr_dict['vol_info'])
+                        gen_image = self.renorm_(gen_image, curr_dict['vol_info'])
                         
                         
                         
             if self.location_scale is not None:
-                # print(gen_image.shape)
                 img = curr_dict["img"].copy()
                 lb = curr_dict["lb"].copy()
                 img = self.denorm_(img, curr_dict['vol_info'])
                 
-                # print('img',img.mean(),img.max(),img.min())
                 GLA = self.location_scale.Global_Location_Scale_Augmentation(img.copy())
                 GLA = self.renorm_(GLA, curr_dict['vol_info'])
 
                 LLA = self.location_scale.Local_Location_Scale_Augmentation(img.copy(), lb.astype(np.int32))
                 LLA = self.renorm_(LLA, curr_dict['vol_info'])
-                # print('LLA',LLA.mean(),LLA.max(),LLA.min())
                 comp = np.concatenate([GLA, LLA, curr_dict["lb"]], -1)
 
                 gen_image_GLA = 1
                 
                 gen_image_LLA = 1
-                # if self.use_gen_image:
-                #     # gen_image_GLA = self.location_scale.Global_Location_Scale_Augmentation(gen_image.copy())
-                #     # gen_image_GLA = self.renorm_(gen_image_GLA, curr_dict['vol_info'])
-                #     # gen_image_LLA = self.location_scale.Local_Location_Scale_Augmentation(gen_image.copy(), lb.astype(np.int32))
-                #     # gen_image_LLA = self.renorm_( gen_image_LLA, curr_dict['vol_info'])
-                #     # print('gen',gen_image.mean(),gen_image.max(),gen_image.min())
-                #     gen_image = self.renorm_(gen_image, curr_dict['vol_info'])
                 if self.transforms:
                     if not self.use_gen_image:
                         timg, lb = self.transforms(comp, c_img=2, c_label=1, nclass=self.nclass, is_train=self.is_train,
                                                 use_onehot=False,use_gen_image=self.use_gen_image)
                         GLA, LLA = np.split(timg, 2, -1)
                     else:
-                        # comp = np.concatenate([gen_image_GLA,gen_image_LLA,comp], axis=-1)
-                        # timg, lb = self.transforms(comp, c_img=4, c_label=1, nclass=self.nclass, is_train=self.is_train,
-                        #                         use_onehot=False,use_gen_image = self.use_gen_image)
                         comp = np.concatenate([gen_image,comp], axis=-1)
                         timg, lb = self.transforms(comp, c_img=3, c_label=1, nclass=self.nclass, is_train=self.is_train,
                                                 use_onehot=False,use_gen_image = self.use_gen_image)
-                        # print(timg.shape)
                         gen_image, GLA, LLA = np.split(timg, 3, -1)
                         gen_image = np.float32(gen_image)
                         gen_image = np.transpose(gen_image, (2, 0, 1))
                         gen_image = torch.from_numpy(gen_image)
-                        # gen_image_LLA = np.float32(gen_image_LLA)
-                        # gen_image_LLA = np.transpose(gen_image_LLA, (2, 0, 1))
-                        # gen_image_LLA = torch.from_numpy(gen_image_LLA)
-                        # print('gen_image',gen_image.shape)
-                        # print('gen_image',gen_image.shape)
                 img = GLA
 
                 aug_img = LLA
@@ -286,10 +259,6 @@ class CardiacDataset(torch_data.Dataset):
                 
                 img = curr_dict["img"].copy()
                 lb = curr_dict["lb"].copy()
-                # if self.is_train:
-                #     img = self.denorm_(img, curr_dict['vol_info'])
-                #     img = self.location_scale.Global_Location_Scale_Augmentation(img.copy())
-                #     img = self.renorm_(img, curr_dict['vol_info'])
 
                 comp = np.concatenate([img, lb], axis=-1)
                 if self.transforms:
@@ -297,9 +266,6 @@ class CardiacDataset(torch_data.Dataset):
                         img, lb = self.transforms(comp, c_img=1, c_label=1, nclass=self.nclass, is_train=self.is_train,
                                                 use_onehot=False)
                     else:
-                        # if self.is_train:
-                        #     gen_image = self.location_scale.Global_Location_Scale_Augmentation(gen_image.copy())
-                        # gen_image = self.renorm_(gen_image, curr_dict['vol_info'])
                         comp = np.concatenate([gen_image,comp], axis=-1)
                         timg, lb = self.transforms(comp, c_img=2, c_label=1, nclass=self.nclass, is_train=self.is_train,
                                                 use_onehot=False,use_gen_image = self.use_gen_image)

@@ -40,6 +40,5 @@ class SetCriterion(nn.Module):
             for i in len(logits):
                 loss_consist += self.consist_loss(features[i],aug_features[i])
                 loss_kd += self.kd_loss(aug_logits[i],logits[i])
-                # return {'kd_loss': loss_kd,'consist_loss':loss_consist}
             
             return {'kd_loss': loss_kd,'consist_loss':loss_consist}

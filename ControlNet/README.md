@@ -12,7 +12,7 @@ Next, use the following code to convert the weight to the correct format.
 
     python tool_add_control_sd21.py ./models/v2-1_512-ema-pruned.ckpt ./models/control_sd21_ini.ckpt
 
-Assume you have the datasets ready for [TransUNet](../TransUNet/README.md), [FCBFormer](../FCBFormer/README.md), and [SLAug](../TransUNet/README.md), change the [data_dir] in [train_sd21.py](./train_sd21.py). For SLAug, please change [data_dir] in the datasets files [AbdominalDataset.py](./datasets/AbdominalDataset.py) and [CardiacDataset.py](./datasets/CardiacDataset.py) directly following SLAug. 
+Assume you have the datasets ready for [TransUNet](../TransUNet/README.md), [FCBFormer](../FCBFormer/README.md), and [SLAug](../TransUNet/README.md), change the [data_dir] and [absolute_path] in [train_sd21.py](./train_sd21.py). For SLAug, please change [data_dir] in the datasets files [AbdominalDataset.py](./datasets/AbdominalDataset.py) and [CardiacDataset.py](./datasets/CardiacDataset.py) directly following SLAug. 
 
 
 ## Usage

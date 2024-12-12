@@ -84,19 +84,12 @@ class SegDataset(data.Dataset):
         gen_x = 1
         gen_image_GLA = 1
         gen_image_LLA = 1
-        if self.gen_input_path is not None:
+        if self.gen_input_path is not None: # load generated image
             gen_input_ID = os.path.join(self.gen_input_path,os.path.basename(input_ID).split('.')[0]+'.npz')
             with np.load(gen_input_ID) as npz_data:
                 gen_image = npz_data['image']
             gen_x = gen_image[np.random.choice(len(gen_image))]
             gen_x = resize(gen_x,output_shape=(192,192),anti_aliasing=False,order=1)
-            # if self.location_scale is not None:
-            #     gen_image_GLA = self.location_scale.Global_Location_Scale_Augmentation(gen_x.copy())
-            #     gen_image_LLA = self.location_scale.Local_Location_Scale_Augmentation(gen_x.copy(), y.astype(np.int32))
-            #     gen_x = gen_image_GLA
-            #     gen_image_LLA = self.transform_input(gen_image_LLA).float()
-            # print('x',x.mean(),x.max(),x.min())
-            # print('gen',gen_x.mean(),gen_x.max(),gen_x.min())
             gen_x = self.transform_input(gen_x).float()
         aug_img = 1
         if self.location_scale is not None:
@@ -106,8 +99,6 @@ class SegDataset(data.Dataset):
             aug_img = LLA
             aug_img = self.transform_input(aug_img).float()
         x = self.transform_input(x).float()
-        # y = np.expand_dims(y,axis=-1)
-        # print(y.shape)
         y = torch.round(self.transform_target(y))
         if self.hflip:
             if random.uniform(0.0, 1.0) > 0.5:
@@ -115,8 +106,6 @@ class SegDataset(data.Dataset):
                 y = TF.hflip(y)
                 if self.location_scale is not None:
                     aug_img  = TF.hflip(aug_img)
-                    # if gen_x is not None:
-                    #     gen_image_LLA = TF.hflip(gen_image_LLA)
                 if gen_x is not None:
                     gen_x = TF.hflip(gen_x)
 
@@ -126,8 +115,6 @@ class SegDataset(data.Dataset):
                 y = TF.vflip(y)
                 if self.location_scale is not None:
                     aug_img  = TF.vflip(aug_img)
-                    # if gen_x is not None:
-                    #     gen_image_LLA = TF.vflip(gen_image_LLA)
                 if gen_x is not None:
                     gen_x = TF.vflip(gen_x)
 
@@ -141,12 +128,10 @@ class SegDataset(data.Dataset):
             y = TF.affine(y, angle, (h_trans, v_trans), scale, shear, fill=0.0)
             if self.location_scale is not None:
                 aug_img  = TF.affine(aug_img, angle, (h_trans, v_trans), scale, shear, fill=-1.0)
-                # if gen_x is not None:
-                #     gen_image_LLA = TF.affine(gen_image_LLA, angle, (h_trans, v_trans), scale, shear, fill=-1.0)
             if gen_x is not None:
                 gen_x = TF.affine(gen_x, angle, (h_trans, v_trans), scale, shear, fill=-1.0)
         
-        # print(y.shape)
+        
         sample = {"images": x,
                 "labels":y[0].long(),
                 "aug_images": aug_img,
@@ -178,7 +163,6 @@ def get_training(modality, location_scale,  tile_z_dim = 3, use_gen_image=False)
     transform_input4train = transforms.Compose(
         [
             transforms.ToTensor(),
-            # transforms.Resize((352, 352), antialias=True),
             transforms.GaussianBlur((25, 25), sigma=(0.001, 2.0)),
             transforms.ColorJitter(
                 brightness=0.4, contrast=0.5, saturation=0.25, hue=0.01
@@ -189,7 +173,6 @@ def get_training(modality, location_scale,  tile_z_dim = 3, use_gen_image=False)
 
     transform_target = transforms.Compose(
         [transforms.ToTensor(),
-        #   transforms.Resize((352, 352)),
             transforms.Grayscale()]
     )
 
@@ -204,9 +187,6 @@ def get_training(modality, location_scale,  tile_z_dim = 3, use_gen_image=False)
         location_scale=location_scale
     )
 
-    # train_indices, test_indices, val_indices = split_ids(len(train_dataset.input_paths))
-
-    # train_dataset = data.Subset(train_dataset, train_indices)
 
     return train_dataset
 
@@ -215,14 +195,12 @@ def get_validation(modality,  tile_z_dim = 3):
     transform_input4test = transforms.Compose(
         [
             transforms.ToTensor(),
-            # transforms.Resize((352, 352), antialias=True),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
 
     transform_target = transforms.Compose(
         [transforms.ToTensor(), 
-        #  transforms.Resize((352, 352)),
           transforms.Grayscale()]
     )
 
@@ -241,14 +219,12 @@ def get_test(modality,  tile_z_dim = 3):
     transform_input4test = transforms.Compose(
         [
             transforms.ToTensor(),
-            # transforms.Resize((352, 352), antialias=True),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ]
     )
 
     transform_target = transforms.Compose(
-        [transforms.ToTensor(), 
-        #  transforms.Resize((352, 352)), 
+        [transforms.ToTensor(),  
          transforms.Grayscale()]
     )
 

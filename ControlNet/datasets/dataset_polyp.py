@@ -18,10 +18,6 @@ class RandomGenerator(object):
     def __call__(self, sample):
         image, label = sample['image'], sample['label']
 
-        # if random.random() > 0.5:
-        #     image, label = random_rot_flip(image, label)
-        # elif random.random() > 0.5:
-        #     image, label = random_rotate(image, label)
         x, y, _ = image.shape
         if x != self.output_size[0] or y != self.output_size[1]:
             image = zoom(image, (self.output_size[0] / x, self.output_size[1] / y, 1), order=3)  # why not 3?
@@ -34,7 +30,7 @@ class RandomGenerator(object):
         gt_seg = get_color_pallete(label).convert('RGB')
 
         # to [0,1]
-        gt_seg = torch.from_numpy(np.array(gt_seg).astype(np.float32))# / 255.0)
+        gt_seg = torch.from_numpy(np.array(gt_seg).astype(np.float32))
         label = torch.from_numpy(label.astype(np.float32))
         
         sample = {'image': image, 'label': label.long(),'seg_image':gt_seg}

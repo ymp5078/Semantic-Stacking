@@ -44,8 +44,6 @@ class BaseDataSets(Dataset):
                 new_data_list = list(filter(lambda x: re.match('{}.*'.format(ids), x) != None, self.all_volumes))
                 self.sample_list.extend(new_data_list)
 
-        # if num is not None and self.split == "train":
-        #     self.sample_list = self.sample_list[:num]
         print("total {} samples".format(len(self.sample_list)))
 
         # custom, add generated images for the same seg map
@@ -66,15 +64,12 @@ class BaseDataSets(Dataset):
     def __getitem__(self, idx):
         case = self.sample_list[idx]
 
-        # image = h5f['image'][:]
-        # label = h5f['label'][:]
-        # sample = {'image': image, 'label': label}
         if self.split == "train":
             h5f = h5py.File(self._base_dir + "/ACDC_training_slices/{}".format(case), 'r')
             image = h5f['image'][:]
             label = h5f['label'][:]  # fix sup_type to label
             sample = {'image': image, 'label': label}
-            if self.gen_image_dir is not None:
+            if self.gen_image_dir is not None: # load generated image
                 gen_image_path = os.path.join(self.gen_image_dir,case.replace('.h5','.npz'))
                 # print(gen_image_path)
                 with np.load(gen_image_path) as npz_data:
@@ -125,9 +120,6 @@ class RandomGenerator(object):
     def __call__(self, sample):
         image, label = sample['image'], sample['label']
         gen_image = sample.get('gen_image',None)
-        # ind = random.randrange(0, img.shape[0])
-        # image = img[ind, ...]
-        # label = lab[ind, ...]
         if random.random() > 0.5:
             image, label, gen_image = random_rot_flip(image, label, gen_image)
         elif random.random() > 0.5:

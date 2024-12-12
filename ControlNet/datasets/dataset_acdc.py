@@ -46,8 +46,6 @@ class BaseDataSets(Dataset):
                 self.sample_list.extend(new_data_list)
         
         self.class_names = ['background',' right ventricle','left ventricle','myocardium']
-        # if num is not None and self.split == "train":
-        #     self.sample_list = self.sample_list[:num]
         print("total {} samples".format(len(self.sample_list)))
 
     def _get_ids(self):
@@ -64,9 +62,6 @@ class BaseDataSets(Dataset):
     def __getitem__(self, idx):
         case = self.sample_list[idx]
 
-        # image = h5f['image'][:]
-        # label = h5f['label'][:]
-        # sample = {'image': image, 'label': label}
         if self.split == "train":
             h5f = h5py.File(self._base_dir + "/ACDC_training_slices/{}".format(case), 'r')
             image = h5f['image'][:]
@@ -83,7 +78,6 @@ class BaseDataSets(Dataset):
         
         unique_classes = np.unique(sample['label'])
         prompt = "A 2D slice of a cardiac MRI scan showing " + ", ".join([self.class_names[c] for c in unique_classes])
-        # print(sample['image'].shape,sample['seg_image'].shape)
         return dict(jpg=sample['image'], txt=prompt, hint=sample['seg_image'], path=sample['case_name'])
 
 
@@ -110,13 +104,6 @@ class RandomGenerator(object):
 
     def __call__(self, sample):
         image, label = sample['image'], sample['label']
-        # ind = random.randrange(0, img.shape[0])
-        # image = img[ind, ...]
-        # label = lab[ind, ...]
-        # if random.random() > 0.5:
-        #     image, label = random_rot_flip(image, label)
-        # elif random.random() > 0.5:
-        #     image, label = random_rotate(image, label)
         x, y = image.shape
         if x != self.output_size[0] or y != self.output_size[1]:
             image = zoom(image, (self.output_size[0] / x, self.output_size[1] / y), order=0)  # the default is 0
@@ -124,7 +111,6 @@ class RandomGenerator(object):
 
         assert (image.shape[0] == self.output_size[0]) and (image.shape[1] == self.output_size[1])
         image = torch.from_numpy(image.astype(np.float32)).unsqueeze(-1).expand((-1,-1,3))
-        # print(image.max(),image.min())
         gt_seg = get_color_pallete(label).convert('RGB')
 
         # to [0,1]

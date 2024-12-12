@@ -43,14 +43,12 @@ class SegDataset(data.Dataset):
         gen_x = None
         if self.use_aug:
             gen_x = self.transform_input(x)
-        elif self.gen_input_path is not None:
+        elif self.gen_input_path is not None: # load generated image
             gen_input_ID = os.path.join(self.gen_input_path,os.path.basename(input_ID).split('.')[0]+'.npz')
             with np.load(gen_input_ID) as npz_data:
                 gen_image = npz_data['image']
             gen_x = gen_image[np.random.choice(len(gen_image))]
             
-            # print('x',x.mean(),x.max(),x.min())
-            # print('gen',gen_x.mean(),gen_x.max(),gen_x.min())
             gen_x = self.transform_input(gen_x)
 
 
