@@ -18,7 +18,11 @@ To reproduce the experimental results for each base model, please refer to the c
 
 ## License
 
-The project uses code from different repositories. Thus, different licenses are used following the previous work. Please refer the the corresponding directory for detail.
+The license for our code is in [LICENSE](./LICENSE). The original licenses for each project is in the corresponding folder.
+
+## Acknowledgements
+
+Our codes are built on top of [ControlNet](https://github.com/lllyasviel/ControlNet), [TransUNet](https://github.com/Beckschen/TransUNet/tree/main), [FCBFormer](https://github.com/ESandML/FCBFormer/tree/main), and [SLAug](https://github.com/Kaiseem/SLAug). We thank the commuity for their efforts in developing these open-source projects.
 
 ## Citation
 Please consider to cite our paper. Thank you!
