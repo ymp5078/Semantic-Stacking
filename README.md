@@ -6,7 +6,7 @@ S2S2 is a training pipeline that improves the robustness of a medical image segm
 
 ## Datasets
 
-To obtain the datasets, please refer to the corresponding directory. You will also need to preprocess the data (generate the semantic stack) using ControlNet. Please refere the the [ControlNet](./ControlNet) directory for detail.
+To obtain the datasets, please refer to [TransUNet](./TransUNet), [FCBFormer](./FCBFormer), and [SLAug](./SLAug). You will also need to preprocess the data (generate the semantic stack) using ControlNet. Please refere the the [ControlNet](./ControlNet) directory for detail.
 
 ## Experiments
 
